@@ -1,44 +1,51 @@
-const express = require("express")
-const fetch = require("node-fetch")
-const cors = require("cors")
+const express = require("express");
+const fetch = require("node-fetch");
+const cors = require("cors");
 
-const app = express()
-app.use(cors())
+const app = express();
+app.use(cors());
 
-const API_KEY = "0d44b6f148msh3c7c93d3bf2c9a9p151e4ejsn0fe734f52348"
-const API_HOST = "api-football-v1.p.rapidapi.com"
+const API_KEY = "0d44b6f148msh3c7c93d3bf2c9a9p151e4ejsn0fe734f52348";
+const API_HOST = "api-football-v1.p.rapidapi.com";
 
-app.get("/matches", async (req,res)=>{
+/* Test route */
+app.get("/", (req, res) => {
+  res.send("Betwise backend is running");
+});
 
-const league = req.query.league || "39"
+/* Matches route */
+app.get("/matches", async (req, res) => {
 
-const url = `https://${API_HOST}/v3/fixtures?league=${league}&season=2025`
+  const league = req.query.league || "39";
 
-try{
+  const url = `https://${API_HOST}/v3/fixtures?league=${league}&season=2025`;
 
-const response = await fetch(url,{
-headers:{
-"X-RapidAPI-Key":API_KEY,
-"X-RapidAPI-Host":API_HOST
-}
-})
+  try {
 
-const data = await response.json()
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "X-RapidAPI-Key": API_KEY,
+        "X-RapidAPI-Host": API_HOST
+      }
+    });
 
-res.json(data)
+    const data = await response.json();
 
-}catch(error){
+    res.json(data);
 
-res.json({error:"Failed to fetch matches"})
+  } catch (error) {
 
-}
+    res.status(500).json({
+      error: "Failed to fetch matches"
+    });
 
-})
+  }
 
-const PORT = process.env.PORT || 3000
+});
 
-app.listen(PORT,()=>{
+const PORT = process.env.PORT || 3000;
 
-console.log("Server running")
-
-})
+app.listen(PORT, () => {
+  console.log("Server running on port " + PORT);
+});
